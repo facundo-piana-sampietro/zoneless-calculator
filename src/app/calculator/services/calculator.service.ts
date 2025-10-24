@@ -21,7 +21,9 @@ export class CalculatorService {
 
     //Calcular resultados
     if (value === '='){
-      this.calculateResult();
+      const result = this.calculateResult();
+      this.resultText.set(result.toString());
+      this.subResultText.set('0');
       return;
     }
 
@@ -54,12 +56,26 @@ export class CalculatorService {
 
     // Aplicar operador
     if (operators.includes(value)){
-
-      this.calculateResult();
-
+      
+      
+      //Si esta buscando resultado a partir de un operador, entra por acá.
+      //La validación significa que si toco un operador con ambas variables con algun número,
+      //significa que está realizando una operación con eso.
+      if (this.resultText() != '0' && this.subResultText() != '0'){
+        const result = this.calculateResult();
+        this.subResultText.set(result.toString());
+        this.resultText.set('0');
+        this.lastOperator.set(value);
+        return
+      } else if (this.resultText() == '0' && this.subResultText() != '0'){
+        this.lastOperator.set(value);
+        return  
+      }
+      
       this.lastOperator.set(value);
       this.subResultText.set(this.resultText());
       this.resultText.set('0');
+      
       return;
     }
 
@@ -110,7 +126,8 @@ export class CalculatorService {
     }
   }
 
-  public calculateResult(){
+  public calculateResult(): string{
+    debugger
     const number1 = parseFloat(this.subResultText())
     const number2 = parseFloat(this.resultText())
 
@@ -136,9 +153,7 @@ export class CalculatorService {
         break;
     }
 
-    this.resultText.set(result.toString());
-    this.subResultText.set('0');
-
+    return result.toString();
   }
 
 }
